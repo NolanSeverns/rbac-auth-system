@@ -69,6 +69,7 @@ Tooling
 Postman – API testing
 dotenv – Environment variable management
 
+
 app/
 ├── core/
 │   ├── auth.py          # JWT validation & RBAC enforcement
@@ -92,6 +93,7 @@ app/
 │
 ├── database.py          # Database engine & session setup
 ├── main.py              # Application entry point
+
 
 Authentication & Authorization Flow
 User Registration
