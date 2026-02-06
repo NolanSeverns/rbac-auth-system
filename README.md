@@ -1,49 +1,59 @@
 RBAC Authentication System
+
 Overview
-This project is a production-style Role-Based Access Control (RBAC) authentication system built using FastAPI, PostgreSQL, SQLAlchemy, and JSON Web Tokens (JWT). It demonstrates how modern backend systems enforce authentication, authorization, and accountability in security-sensitive environments.
-The system is designed to reflect real-world enterprise and government security architecture, not a simplified demo. Core goals include secure credential handling, strict role enforcement, auditability of privileged actions, and clean separation of concerns.
+
+This project is a production-style Role-Based Access Control (RBAC) authentication system built with FastAPI, PostgreSQL, SQLAlchemy, and JSON Web Tokens (JWT). It demonstrates how modern backend systems enforce authentication, authorization, and accountability in security-sensitive environments.
+The system is intentionally designed to mirror real-world enterprise and government backend architecture, rather than a simplified demo or CRUD-style application.
+
 Purpose of the Project
-The purpose of this project is to demonstrate:
+The goal of this project is to demonstrate:
 Secure user authentication using JWTs
 Role-based authorization enforced at the API boundary
-Admin-only privilege escalation with accountability
+Controlled administrative privilege escalation
 Immutable audit logging for sensitive actions
-Clean, scalable backend architecture
+Clean, maintainable, and scalable backend design
+
 This project is suitable as:
 A backend security portfolio project
-A demonstration of RBAC principles
-A reference implementation for secure FastAPI services
-Key Features
+A demonstration of RBAC best practices
+A reference implementation for FastAPI-based security systems
+
+Core Features
 Authentication
 User registration and login
 Secure password hashing using Argon2
 JWT-based authentication
-Time-limited access tokens with expiration (exp) and issued-at (iat) claims
-Automatic rejection of expired or invalid tokens
+Access tokens include:
+sub (subject / user identity)
+iat (issued at)
+exp (expiration)
+Expired or invalid tokens are automatically rejected
 Authorization (RBAC)
-Users may have multiple roles
-Roles are stored in the database (not hardcoded)
-Role enforcement is implemented using FastAPI dependencies
-Unauthorized access is blocked before business logic executes
-Clear separation between authentication and authorization logic
-Admin Privileges
+Users can have multiple roles
+Roles are stored and managed in the database
+Role checks are enforced using FastAPI dependency injection
+Unauthorized users are blocked before business logic executes
+Authentication and authorization concerns are fully separated
+Administrative Privileges
 Admin-only routes protected by RBAC
-Admins can promote users to admin role
-Privilege escalation is strictly controlled
+Administrators can promote users to admin
 Duplicate promotions are prevented
+Privilege escalation is impossible without the admin role
 Audit Logging
-All privileged admin actions are logged
-Each audit log entry records:
-Who performed the action
-What action occurred
-The target of the action
+All privileged administrative actions are logged
+Each audit record includes:
+Actor (who performed the action)
+Action (what occurred)
+Target (who or what was affected)
 Timestamp
-Admin-only audit log viewer endpoint
-Logs are immutable (no update or delete operations)
+Audit logs are written atomically with admin actions
+Logs are read-only and admin-accessible
+No delete or update operations exist for audit records
 Demo-Friendly Protected Routes
 Explicit user-only and admin-only endpoints
 RBAC enforcement is visible without reading source code
-Designed for live demos and security walkthroughs
+Designed for live demos and walkthroughs
+
 Technology Stack
 Backend
 Python 3.13
@@ -53,7 +63,7 @@ PostgreSQL – Relational database
 Uvicorn – ASGI server
 Security
 JWT (JSON Web Tokens) – Authentication
-python-jose – JWT encoding/decoding
+python-jose – JWT encoding and validation
 Passlib + Argon2 – Password hashing
 Tooling
 Postman – API testing
@@ -84,23 +94,22 @@ app/
 ├── main.py              # Application entry point
 
 Authentication & Authorization Flow
-User registers
-Password is securely hashed (Argon2)
+User Registration
+Password is securely hashed using Argon2
 User record is stored in the database
-User logs in
+User Login
 Credentials are verified
 A JWT access token is issued
-Token includes sub, iat, and exp claims
-User accesses protected routes
+Token includes iat and exp claims
+Accessing Protected Routes
 JWT is validated on every request
 Expired or invalid tokens are rejected
 Role checks are enforced via dependencies
-Admin actions
-Only users with the admin role may perform admin actions
+Administrative Actions
+Only users with the admin role can perform admin actions
 All admin actions generate immutable audit logs
 
-Example Endpoints
-
+Example API Endpoints
 Authentication
 POST /auth/register
 POST /auth/login
@@ -115,31 +124,43 @@ GET  /admin/audit-logs
 
 Audit Logging Design
 Audit logging is implemented to ensure accountability and non-repudiation.
-Key characteristics:
-Logs are written inside the same database transaction as the admin action
-An action cannot succeed without a corresponding audit record
-Logs are read-only and admin-visible
-No deletion or modification endpoints exist
-This mirrors patterns used in government, financial, and compliance-focused systems.
+Key properties:
+Audit logs are written in the same database transaction as the admin action
+An administrative action cannot succeed without an audit record
+Logs are immutable and read-only
+Only administrators can view audit history
+This design mirrors patterns used in government, financial, and compliance-focused systems.
+
+RBAC Bootstrap Strategy
+RBAC systems require an initial administrator.
+This project uses a one-time bootstrap process:
+The first admin is assigned directly in the database
+After bootstrap, all role changes are performed via secured API endpoints
+No further manual role assignment is required
+This approach prevents unauthorized privilege escalation and ensures long-term access control integrity.
+
 Security Considerations
 Passwords are never stored in plaintext
 Tokens are cryptographically signed and time-limited
 Authorization is enforced server-side only
-Role data is not trusted from client input
-Secrets are externalized via environment variables
-.gitignore prevents sensitive files from being committed
+Client-supplied role data is never trusted
+Secrets are managed via environment variables
+Sensitive files are excluded via .gitignore
+
 Disclaimer
 This project is intended for educational and demonstration purposes.
-It is not a drop-in replacement for a production security system without further hardening, such as:
+It is not a drop-in production security solution without additional hardening, such as:
 Token refresh mechanisms
 Rate limiting
 Account lockout policies
-Comprehensive test coverage
-Centralized logging / SIEM integration
+Centralized logging or SIEM integration
+Automated test coverage
+
 Summary
 This RBAC Authentication System demonstrates how to design and implement:
 Secure authentication
 Strict role-based authorization
-Privileged action accountability
-Clean, maintainable backend architecture
-It goes beyond basic CRUD applications by focusing on security correctness, auditability, and real-world design patterns.
+Controlled administrative privilege escalation
+Immutable audit logging
+Clean, scalable backend architecture
+The project focuses on security correctness, auditability, and real-world design patterns, going beyond basic CRUD-style applications.
