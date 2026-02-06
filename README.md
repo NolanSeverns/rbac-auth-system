@@ -11,12 +11,12 @@ Secure user authentication using JWTs
 Role-based authorization enforced at the API boundary
 Controlled administrative privilege escalation
 Immutable audit logging for sensitive actions
-Clean, maintainable, and scalable backend design
+Clean, maintainable, and scalable backend design.
 
 This project is suitable as:
 A backend security portfolio project
 A demonstration of RBAC best practices
-A reference implementation for FastAPI-based security systems
+A reference implementation for FastAPI-based security systems.
 
 Core Features
 Authentication
